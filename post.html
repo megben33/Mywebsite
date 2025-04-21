@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe vs Smart Computer</title>
+  <style>
+    body {
+      background: #f7f9fc;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      margin: 20px 0;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .cell:hover {
+      background: #e0f7fa;
+    }
+
+    .cell.taken {
+      cursor: default;
+      color: #333;
+    }
+
+    #status {
+      font-size: 20px;
+      color: #00796b;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #00796b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #004d40;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe vs Smart Computer</h1>
+  <div class="board" id="board"></div>
+  <div id="status"></div>
+  <button onclick="resetGame()">Restart Game</button>
+
+  <script>
+    const boardElement = document.getElementById('board');
+    const statusElement = document.getElementById('status');
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let isGameOver = false;
+
+    function createBoard() {
+      boardElement.innerHTML = "";
+      board.forEach((cell, index) => {
+        const div = document.createElement('div');
+        div.classList.add('cell');
+        if (cell) {
+          div.classList.add('taken');
+          div.textContent = cell;
+        }
+        div.addEventListener('click', () => playerMove(index));
+        boardElement.appendChild(div);
+      });
+    }
+
+    function playerMove(index) {
+  if (board[index] === "" && !isGameOver) {
+    board[index] = "X";
+    updateBoard();
+    checkGameState();
+    if (!isGameOver) {
+      setTimeout(() => {
+        let move;
+        if (Math.random() < 0.8) {
+          // 50% chance of smart move
+          move = findBestMove(board);
+        } else {
+          // 50% chance of random move
+          const available = board.map((val, i) => val === "" ? i : null).filter(v => v !== null);
+          move = available[Math.floor(Math.random() * available.length)];
+        }
+        board[move] = "O";
+        updateBoard();
+        checkGameState();
+      }, 300);
+    }
+  }
+}
+
+
+    function checkGameState() {
+      const winner = getWinner(board);
+      if (winner) {
+        isGameOver = true;
+        statusElement.textContent = `${winner} wins!`;
+      } else if (!board.includes("")) {
+        isGameOver = true;
+        statusElement.textContent = "It's a draw!";
+      }
+    }
+
+    function getWinner(b) {
+      const winCombos = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+      for (let combo of winCombos) {
+        const [a, b1, c] = combo;
+        if (b[a] && b[a] === b[b1] && b[a] === b[c]) {
+          return b[a];
+        }
+      }
+      return null;
+    }
+
+    function findBestMove(b) {
+      let bestVal = -Infinity;
+      let move = -1;
+      for (let i = 0; i < b.length; i++) {
+        if (b[i] === "") {
+          b[i] = "O";
+          let moveVal = minimax(b, 0, false);
+          b[i] = "";
+          if (moveVal > bestVal) {
+            move = i;
+            bestVal = moveVal;
+          }
+        }
+      }
+      return move;
+    }
+
+    function minimax(b, depth, isMax) {
+      let score = evaluate(b);
+      if (score === 10) return score - depth;
+      if (score === -10) return score + depth;
+      if (!b.includes("")) return 0;
+
+      if (isMax) {
+        let best = -Infinity;
+        for (let i = 0; i < b.length; i++) {
+          if (b[i] === "") {
+            b[i] = "O";
+            best = Math.max(best, minimax(b, depth + 1, false));
+            b[i] = "";
+          }
+        }
+        return best;
+      } else {
+        let best = Infinity;
+        for (let i = 0; i < b.length; i++) {
+          if (b[i] === "") {
+            b[i] = "X";
+            best = Math.min(best, minimax(b, depth + 1, true));
+            b[i] = "";
+          }
+        }
+        return best;
+      }
+    }
+
+    function evaluate(b) {
+      const winCombos = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+      for (let combo of winCombos) {
+        const [a, b1, c] = combo;
+        if (b[a] && b[a] === b[b1] && b[a] === b[c]) {
+          if (b[a] === "O") return 10;
+          else if (b[a] === "X") return -10;
+        }
+      }
+      return 0;
+    }
+
+    function updateBoard() {
+      createBoard();
+    }
+
+    function resetGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      isGameOver = false;
+      statusElement.textContent = "";
+      createBoard();
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+/* Fun and Modern Stylesheet for Travel Page */
+
+body {
+    background-color: #cfe9f1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2b2b2b;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  h1, h2 {
+    text-align: center;
+    color: #0d3c61;
+    font-family: 'Georgia', serif;
+  }
+  
+  a {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #0d3c61;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  a:hover {
+    background-color: #08243c;
+  }
+  
+  ul, ol {
+    max-width: 600px;
+    margin: 20px auto;
+    padding-left: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  span {
+    display: block;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #0d3c61;
+    margin-bottom: 10px;
+  }
+  
+  img {
+    display: block;
+  }
